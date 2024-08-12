@@ -25,6 +25,10 @@
     <modules>
         <module>spring-cloud-gateway</module>
         <module>spring-cloud-dependencies</module>
+        <module>spring-cloud-passport</module>
+        <module>spring-cloud-admin</module>
+        <module>spring-cloud-file</module>
+        <module>spring-cloud-common</module>
     </modules>
     <build>
         <plugins>

@@ -1,0 +1,57 @@
+server:
+  port: ${AW_GATEWAY_PORT:8001}
+spring:
+  application:
+    name: aw-gateway
+  profiles:
+    active: ${AW_GATEWAY_ACTIVE:dev}
+
+---
+
+spring:
+  config:
+    import: nacos:aw.yml
+  cloud:
+    inetutils:
+      ignored-interfaces: # 忽略虚拟网卡的网络
+        - VMware.*
+        - VirtualBox.*
+    nacos:
+      discovery:
+        namespace: ${AW_NACOS_DISCOVERY_NAMESPACE:public}
+        server-addr: ${AW_NACOS_DISCOVERY_SERVER_ADDR:127.0.0.1:8848}
+        metadata:
+          preserved.heart.beat.interval: 1000
+          preserved.heart.beat.timeout: 3000
+          preserved.ip.delete.timeout: 3000
+      config:
+        namespace: ${AW_NACOS_CONFIG_NAMESPACE:public}
+        server-addr: ${AW_NACOS_CONFIG_SERVER-ADDR:127.0.0.1:8848}
+        file-extension: yml
+
+---
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true # 开启服务名发现，可以通过服务名访问
+          lower-case-service-id: true
+      routes:
+        - id: passport
+          uri: lb://aw-passport
+          predicates:
+            - Path=/passport/**
+          filters:
+            - StripPrefix=1 # 替换前缀路径aw-passport
+logging:
+  level:
+    org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: debug
+    org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler: debug
+#    root: debug
+management: # 配置项是用于spring boot actuator中管理端点的暴露控制，spring boot Actuator 提供了一组内置的管理和控制端点，用于查看应用程序的各种运行状态和信息
+  endpoints: # admin监控时需要在客户端添加此配置
+    web:
+      exposure:
+        include: '*'

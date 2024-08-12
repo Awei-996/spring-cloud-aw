@@ -1,0 +1,2 @@
+# 这是一种新的自动装配方式，springboot2.7以上
+online.k12code.core.config.AutoConfigurationBean

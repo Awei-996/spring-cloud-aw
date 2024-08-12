@@ -1,0 +1,34 @@
+server:
+  port: ${AW_ADMIN_PORT:9001}
+
+spring:
+  application:
+    name: aw-admin-server
+  profiles:
+    active: ${AW_ADMIN_ACTIVE:dev}
+---
+
+spring:
+  config:
+    import:
+      - nacos:aw.yml
+  cloud:
+    inetutils:
+      ignored-interfaces:
+        - VMware.*
+        - VirtualBox.*
+    nacos:
+      discovery:
+        server-addr: ${AW_NACOS_DISCOVERY_SERVER_ADDR:127.0.0.1:8848}
+        namespace: ${AW_NACOS_DISCOVERY_NAMESPACE:public}
+        metadata:
+          preserved.heart.beat.interval: 1000
+          preserved.heart.beat.timeout: 3000
+          preserved.ip.delete.timeout: 3000
+      config:
+        server-addr: ${AW_NACOS_CONFIG_SERVER_ADDR:127.0.0.1:8848}
+        namespace: ${AW_NACOS_CONFIG_NAMESPACE:public}
+        file-extension: yml
+        shared-configs:
+          - data-id: ${spring.application.name}.${spring.cloud.nacos.config.file-extension}
+            refresh: true
